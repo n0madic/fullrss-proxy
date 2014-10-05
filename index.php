@@ -38,6 +38,8 @@ try {
 // Check sqlite DB is proper
 if ($DB->getAttribute(PDO::ATTR_DRIVER_NAME) == 'sqlite') {
 	preg_match_all('/^\w+:(.+)$/',DB_LINK,$matches);
+	if (!file_exists($matches[1][0]))
+		die('dbError: Database file <strong>'.$matches[1][0].'</strong> is not found!');
 	if (!is_writable($matches[1][0]))
 		die('dbError: Database file <strong>'.$matches[1][0].'</strong> is not writable!');
 }
