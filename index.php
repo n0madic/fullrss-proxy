@@ -4,8 +4,11 @@ require_once('config.php');
 
 // Disable display error if is not development host
 if (in_array($_SERVER["SERVER_ADDR"], ['127.0.0.1','dev.nomadic.name'])) {
+    ini_set('display_errors', 'On');
+    error_reporting(E_ALL);
+} else {
     ini_set('display_errors', 'Off');
-    error_reporting(0);
+    error_reporting(E_ERROR);
 }
 
 // Tune PHP
