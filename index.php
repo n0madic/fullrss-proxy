@@ -162,7 +162,7 @@ if (!empty($_REQUEST['feed'])) {
 						}
 						// Remove blank lines
 						$content = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", $content);
-						$item->description = '<![CDATA[' . $content . ']]>';
+						$item->description = '<![CDATA[' . trim($content) . ']]>';
 					}
 				}
 				$xml = html_entity_decode($rss->asXML(), ENT_XML1);
@@ -622,7 +622,7 @@ if (isset($_POST['locale'])) {
 	}
     ?>
     <table id="list" class="table table-striped table-hover">
-        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>RSS&nbsp;XML</th><th width="130">Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>RSS&nbsp;XML</th><th width="160">Action</th></tr></thead>
         <tbody>
 		<?php
 		try {
@@ -649,6 +649,7 @@ if (isset($_POST['locale'])) {
 			} else {
 				echo '<button id="toggle' . $row['id'] . '" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" title="Disabled" onClick="Toggle(' . $row['id'] . ',1)"><span class="glyphicon glyphicon-ban-circle"></span></button> ';
 			}
+			echo '<a class="btn btn-default btn-xs" href="?feed=' . $row['name'] . '&force" target="_blank"><span class="glyphicon glyphicon-refresh"></span></a> ';
 			echo '<button type="button" data-toggle="tooltip" title="Edit" class="btn btn-primary btn-xs" onClick="Edit(' . $row['id'] . ')"><span class="glyphicon glyphicon-edit"></span></button> ';
 			echo '<button type="button" data-toggle="tooltip" title="View log" class="btn btn-info btn-xs" onClick="Log(' . $row['id'] . ')"><span class="glyphicon glyphicon-list"></span></button> ';
 			echo '<button type="button" data-toggle="tooltip" title="Delete" class="btn btn-danger btn-xs" onClick="Delete(' . $row['id'] . ')"><span class="glyphicon glyphicon-remove"></span></button>';
