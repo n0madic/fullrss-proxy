@@ -2,15 +2,6 @@
 session_start();
 require_once('config.php');
 
-// Disable display error if is not development host
-if (in_array($_SERVER["SERVER_ADDR"], ['127.0.0.1','dev.nomadic.name'])) {
-    ini_set('display_errors', 'On');
-    error_reporting(E_ALL);
-} else {
-    ini_set('display_errors', 'Off');
-    error_reporting(E_ERROR);
-}
-
 // Tune PHP
 libxml_use_internal_errors(true);
 ini_set('allow_url_fopen', 'On');
@@ -110,6 +101,7 @@ if (!empty($_REQUEST['feed'])) {
 				$forced = (isset($_REQUEST['force'])) ? 'forced ' : '';
 				$query_log->execute(array($id, time(), 'Start '.$forced.'update feed <strong>' . $name . '</strong>'));
 				foreach ($rss->channel->item as $item) {
+					set_time_limit(60);
 					$content = '';
 					if (function_exists('curl_init')) {
 						$curl = curl_init($item->link);
@@ -639,7 +631,7 @@ if (isset($_POST['locale'])) {
 			die_error('list', 'dbError: ' . $e->getMessage());
 		}
 		foreach ($query as $row) {
-			echo '<tr id="row_' . $row['id'] . '"><td><a href="?feed=' . $row['name'] . '&force" target="_blank">' . $row['name'] . '</a></td><td>' . $row['description'] . '</td>';
+			echo '<tr id="row_' . $row['id'] . '"><td><a href="?feed=' . $row['name'] . '" target="_blank">' . $row['name'] . '</a></td><td>' . $row['description'] . '</td>';
 			echo '<td>' . $row['charset'] . '</td><td><a href="' . $row['url'] . '" target="_blank">' . $row['url'] . '</a></td>';
 			echo '<td data-toggle="tooltip" title="' . htmlspecialchars($row['method_detail']) . '">' . $row['method'] . '</td>';
 			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="label label-';
