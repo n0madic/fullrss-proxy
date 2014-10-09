@@ -172,6 +172,8 @@ if (!empty($_REQUEST['feed'])) {
 					if (isset($_REQUEST['preview'])) {
 						echo '<div class="row" style="padding: 20px;">';
 						echo $content;
+						echo '<br /><h4>HTML code:</h4>';
+						echo '<textarea class="form-control" style="overflow:auto;resize:none;cursor:auto;" rows="20" readonly>' . $content . '</textarea>';
 						echo '</div>';
 						die();
 					}
@@ -446,7 +448,7 @@ if (isset($_POST['locale'])) {
 		$.ajax({
 			url: '<?echo $_SERVER['SCRIPT_NAME'];?>',
 			type: 'POST',
-			data: {'feed':id, 'force':'', 'preview':''},
+			data: {'feed':id, 'force':'on', 'preview':'on'},
 			success: function (result) {
 				if (result !== '') {
 					$('#LogModalLabel').text('Preview feed (one first item)');
