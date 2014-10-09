@@ -102,7 +102,7 @@ if (!empty($_REQUEST['feed'])) {
 			}
 			if ($need_update || isset($_REQUEST['force'])) {
 				$id = $result['id'];
-				$filters = preg_split("/\r\n|\n|\r/", $result['filter']);
+				$filters = preg_split("/\r\n|\n|\r/", $result['filter'], -1, PREG_SPLIT_NO_EMPTY);
 				$forced = (isset($_REQUEST['force'])) ? 'forced ' : '';
 				$query_log->execute(array($id, time(), 'Start '.$forced.'update feed <strong>' . $name . '</strong>'));
 				foreach ($rss->channel->item as $item) {
@@ -148,6 +148,16 @@ if (!empty($_REQUEST['feed'])) {
 								} else {
 									$query_log->execute(array($id, time(), 'ERROR get full text from ' . $item->link . ' for <strong>' . $name . '</strong>'));
 								}
+							}
+							break;
+						case "RegEx":
+							if (!empty($result['method_detail'])) {
+								mb_ereg_search_init($html, $result['method_detail']);
+								while ($m = mb_ereg_search_regs()){
+									$content .= $m[0];
+								}
+							} else {
+									$query_log->execute(array($id, time(), 'ERROR: Empty regular expressions for <strong>' . $name . '</strong>'));							
 							}
 							break;
 					}
@@ -566,6 +576,7 @@ if (isset($_POST['locale'])) {
     				<ul class="dropdown-menu" role="menu">
     				    <li data-value="Readability"><a href="#">Readability</a></li>
     				    <li data-value="Simple HTML DOM"><a href="#">Simple HTML DOM</a></li>
+						<li data-value="RegEx"><a href="#">Search by RegEx</a></li>
     				</ul>
     				<input class="hidden hidden-field" name="method" readonly="readonly" aria-hidden="true" type="text"/>
     			    </div>
@@ -661,7 +672,10 @@ if (isset($_POST['locale'])) {
 		}
 		foreach ($query as $row) {
 			echo '<tr id="row_' . $row['id'] . '"><td><a href="?feed=' . $row['name'] . '" target="_blank">' . $row['name'] . '</a></td><td>' . $row['description'] . '</td>';
-			echo '<td>' . $row['charset'] . '</td><td><a href="' . $row['url'] . '" target="_blank">' . $row['url'] . '</a></td>';
+			echo '<td>' . $row['charset'] . '</td><td>';
+			echo '<a href="' . $row['url'] . '" target="_blank">';
+			echo (mb_strlen($row['url']) > 40) ? mb_substr($row['url'], 0, 40).'&hellip;' : $row['url'];
+			echo '</a></td>';
 			echo '<td data-toggle="tooltip" title="' . htmlspecialchars($row['method_detail']) . '">' . $row['method'] . '</td>';
 			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="glyphicon glyphicon-';
 			echo empty($row['filter']) ? 'unchecked' : 'check';
