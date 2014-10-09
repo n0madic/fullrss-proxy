@@ -749,6 +749,9 @@ function die_error($id, $return)
 }
 
 		?>
+	<footer class="navbar-fixed-bottom">
+		<div style="text-align: center;"><p><a href="https://github.com/n0madic/fullrss-proxy">GitHub</a> &copy; Nomadic 2014</p></div>
+	</footer>
 </div> <!-- container -->
 </body>
 </html>
