@@ -359,6 +359,7 @@ if (isset($_POST['locale'])) {
     <head>
         <title>Full text RSS feeds proxy</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="keywords" content="RSS, Atom, feed, full, full text, full content, full article">
         <link href="favicon.ico" rel="icon" type="image/x-icon" />
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
@@ -720,7 +721,7 @@ if (isset($_POST['locale'])) {
     	<ol>
 		<?php
 		try {
-			$query = $DB->query("SELECT name,description FROM feeds WHERE enabled > 0", PDO::FETCH_ASSOC);
+			$query = $DB->query("SELECT name,description FROM feeds WHERE enabled > 0 ORDER BY description", PDO::FETCH_ASSOC);
 		} catch (PDOException $e) {
 			die_error('select', 'dbError: ' . $e->getMessage());
 		}
