@@ -651,7 +651,7 @@ if (isset($_POST['locale'])) {
 	}
     ?>
     <table id="list" class="table table-striped table-hover">
-        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>RSS&nbsp;XML</th><th width="180">Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>XML</th><th width="180">Action</th></tr></thead>
         <tbody>
 		<?php
 		try {
@@ -663,13 +663,14 @@ if (isset($_POST['locale'])) {
 			echo '<tr id="row_' . $row['id'] . '"><td><a href="?feed=' . $row['name'] . '" target="_blank">' . $row['name'] . '</a></td><td>' . $row['description'] . '</td>';
 			echo '<td>' . $row['charset'] . '</td><td><a href="' . $row['url'] . '" target="_blank">' . $row['url'] . '</a></td>';
 			echo '<td data-toggle="tooltip" title="' . htmlspecialchars($row['method_detail']) . '">' . $row['method'] . '</td>';
-			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="label label-';
-			echo empty($row['filter']) ? 'default">Empty' : 'info">Available';
-			echo '</span></td>';
+			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="glyphicon glyphicon-';
+			echo empty($row['filter']) ? 'unchecked' : 'check';
+			echo '"></span></td>';
 			if (empty($row['xml'])) {
-				echo '<td><span class="label label-default">Empty</span></td>';
+				echo '<td align="center"><button class="btn btn-default btn-xs" data-toggle="tooltip" title="Empty"><span class="glyphicon glyphicon-unchecked"></span></button></td>';
 			} else {
-				echo '<td><button type="button" onClick="ShowXML(' . $row['id'] . ')" class="btn btn-info btn-xs" data-toggle="tooltip" title="Last update: ' . date('d.m.Y H:i:s', $row['lastupdate']) . '">Available';
+				echo '<td align="center"><button type="button" onClick="ShowXML(' . $row['id'] . ')" class="btn btn-info btn-xs" data-toggle="tooltip" title="Last update: ' . date('d.m.Y H:i:s', $row['lastupdate']) . '">';
+				echo '<span class="glyphicon glyphicon-check"></span>';
 				echo '</button></td>';
 			}
 			echo '<td>';
