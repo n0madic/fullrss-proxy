@@ -72,8 +72,13 @@ if (!empty($_REQUEST['feed'])) {
 	$name = strtolower(trim($_REQUEST['feed']));
 	$result = '';
 	try {
-		$query = $DB->prepare("SELECT * FROM feeds WHERE name = :name AND enabled > 0");
-		$query->bindParam(':name', $name, PDO::PARAM_STR);
+		if (is_numeric($name)) {
+			$query = $DB->prepare("SELECT * FROM feeds WHERE id = :id AND enabled > 0");
+			$query->bindParam(':id', $name, PDO::PARAM_INT);
+		} else {
+			$query = $DB->prepare("SELECT * FROM feeds WHERE name = :name AND enabled > 0");
+			$query->bindParam(':name', $name, PDO::PARAM_STR);
+		}
 		$query->execute();
 		$result = $query->fetchAll(PDO::FETCH_ASSOC);
 		$query->closeCursor();
@@ -163,6 +168,12 @@ if (!empty($_REQUEST['feed'])) {
 						// Remove blank lines
 						$content = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", $content);
 						$item->description = '<![CDATA[' . trim($content) . ']]>';
+					}
+					if (isset($_REQUEST['preview'])) {
+						echo '<div class="row" style="padding: 20px;">';
+						echo $content;
+						echo '</div>';
+						die();
 					}
 				}
 				$xml = html_entity_decode($rss->asXML(), ENT_XML1);
@@ -431,21 +442,37 @@ if (isset($_POST['locale'])) {
 				}
 			});
 	}
+	function Preview(id) {
+		$.ajax({
+			url: '<?echo $_SERVER['SCRIPT_NAME'];?>',
+			type: 'POST',
+			data: {'feed':id, 'force':'', 'preview':''},
+			success: function (result) {
+				if (result !== '') {
+					$('#LogModalLabel').text('Preview feed (one first item)');
+					$('#LogContent').html(result);
+					$('#LogModal').modal();
+				} else {
+					alert('ERROR fetch feed!');
+				}
+			}
+		});
+	}
 	function Log(id) {
 		$.ajax({
-				url: '<?echo $_SERVER['SCRIPT_NAME'];?>',
-				type: 'POST',
-				data: {'log':id},
-				success: function (result) {
-					if (result !== '') {
-						$('#LogModalLabel').text('Feed log');
-						$('#LogContent').html(result);
-						$('#LogModal').modal();
-					} else {
-						alert('ERROR fetch log!');
-					}
+			url: '<?echo $_SERVER['SCRIPT_NAME'];?>',
+			type: 'POST',
+			data: {'log':id},
+			success: function (result) {
+				if (result !== '') {
+					$('#LogModalLabel').text('Feed log');
+					$('#LogContent').html(result);
+					$('#LogModal').modal();
+				} else {
+					alert('ERROR fetch log!');
 				}
-			});
+			}
+		});
 	}
 	function ShowXML(id) {
 		$.ajax({
@@ -622,7 +649,7 @@ if (isset($_POST['locale'])) {
 	}
     ?>
     <table id="list" class="table table-striped table-hover">
-        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>RSS&nbsp;XML</th><th width="160">Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>RSS&nbsp;XML</th><th width="180">Action</th></tr></thead>
         <tbody>
 		<?php
 		try {
@@ -649,7 +676,8 @@ if (isset($_POST['locale'])) {
 			} else {
 				echo '<button id="toggle' . $row['id'] . '" type="button" class="btn btn-default btn-xs" data-toggle="tooltip" title="Disabled" onClick="Toggle(' . $row['id'] . ',1)"><span class="glyphicon glyphicon-ban-circle"></span></button> ';
 			}
-			echo '<a class="btn btn-default btn-xs" href="?feed=' . $row['name'] . '&force" target="_blank"><span class="glyphicon glyphicon-refresh"></span></a> ';
+			echo '<a data-toggle="tooltip" title="Force refresh feed" class="btn btn-default btn-xs" href="?feed=' . $row['name'] . '&force" target="_blank"><span class="glyphicon glyphicon-refresh"></span></a> ';
+			echo '<button type="button" data-toggle="tooltip" title="Preview" class="btn btn-default btn-xs" onClick="Preview(' . $row['id'] . ')"><span class="glyphicon glyphicon-eye-open"></span></button> ';
 			echo '<button type="button" data-toggle="tooltip" title="Edit" class="btn btn-primary btn-xs" onClick="Edit(' . $row['id'] . ')"><span class="glyphicon glyphicon-edit"></span></button> ';
 			echo '<button type="button" data-toggle="tooltip" title="View log" class="btn btn-info btn-xs" onClick="Log(' . $row['id'] . ')"><span class="glyphicon glyphicon-list"></span></button> ';
 			echo '<button type="button" data-toggle="tooltip" title="Delete" class="btn btn-danger btn-xs" onClick="Delete(' . $row['id'] . ')"><span class="glyphicon glyphicon-remove"></span></button>';
