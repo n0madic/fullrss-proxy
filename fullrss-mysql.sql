@@ -14,6 +14,7 @@ CREATE TABLE `feeds` (
   `method` char(20) NOT NULL,
   `method_detail` text NOT NULL,
   `filter` text NOT NULL,
+  `imgfix` varchar(255) NOT NULL DEFAULT '',
   `xml` mediumtext NOT NULL,
   `lastupdate` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),

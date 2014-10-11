@@ -8,7 +8,8 @@ CREATE TABLE "feeds" (
   "url" text NOT NULL,
   "method" text NOT NULL,
   "method_detail" text NOT NULL DEFAULT '',
-  "filter" text NOT NULL,
+  "filter" text NOT NULL DEFAULT '',
+  "imgfix" text NOT NULL DEFAULT '',
   "xml" text NOT NULL DEFAULT '',
   "lastupdate" integer NOT NULL DEFAULT '0'
 );
