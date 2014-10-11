@@ -168,12 +168,16 @@ if (!empty($_REQUEST['feed'])) {
 								$search = trim($search);
 								if (preg_match('/^\/.+\/[a-z]*/i', $search)) {
 									// If filter is regex
-									$content = mb_ereg_replace($search, '', $content);
+									$content = preg_replace($search.'u', '', $content);
 								} else {
 									// If filter is replace string
 									$content = str_replace($search, '', $content);
 								}
 							}
+						}
+						// Fix img src if need
+						if (!empty($result['imgfix'])) {
+							$content = preg_replace('/<img([^>]*) src=\"([^http|ftp|https][^\"]*)\"/is', '<img src="'.$result['imgfix'].'$2"', $content);
 						}
 						// Remove blank lines
 						$content = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", $content);
@@ -301,11 +305,11 @@ if (isset($_POST['id']) && !empty($_POST['name'])) {
 			$query = $DB->query("SELECT count(*) FROM feeds WHERE name=" . $DB->quote($_POST['name']));
 			if ($query->fetchColumn())
 				die_error('', '[ERROR] Feed with name <strong>' . $_POST['name'] . '</strong> already present!');
-			$query_update = $DB->prepare("INSERT INTO feeds (name, description, charset, url, method, method_detail, filter) VALUES (:name, :description, :charset, :url, :method, :method_detail, :filter)");
+			$query_update = $DB->prepare("INSERT INTO feeds (name, description, charset, url, method, method_detail, filter, imgfix) VALUES (:name, :description, :charset, :url, :method, :method_detail, :filter, :imgfix)");
 			$mode = 'added';
 		} else {
 			// Edit feed
-			$query_update = $DB->prepare("UPDATE feeds SET name = :name, description = :description, charset = :charset, url = :url, method = :method, method_detail = :method_detail, filter = :filter WHERE id = :id");
+			$query_update = $DB->prepare("UPDATE feeds SET name = :name, description = :description, charset = :charset, url = :url, method = :method, method_detail = :method_detail, filter = :filter, imgfix = :imgfix WHERE id = :id");
 			$query_update->bindParam(':id', $_POST['id'], PDO::PARAM_INT);
 			$mode = 'edited';
 		}
@@ -316,6 +320,7 @@ if (isset($_POST['id']) && !empty($_POST['name'])) {
 		$query_update->bindParam(':method', $_POST['method'], PDO::PARAM_STR);
 		$query_update->bindParam(':method_detail', $_POST['method_detail'], PDO::PARAM_STR);
 		$query_update->bindParam(':filter', $_POST['filter'], PDO::PARAM_STR);
+		$query_update->bindParam(':imgfix', $_POST['imgfix'], PDO::PARAM_STR);
 		$query_update->execute();
 		$query_log->execute(array($_POST['id'], time(), "Successfully " . $mode . " feed <strong>" . $_POST['name'] . "</strong>"));
 	} catch (PDOException $e) {
@@ -407,10 +412,11 @@ if (isset($_POST['locale'])) {
 		$('#name').val(tds[0].innerHTML.match(/>(\w+)</)[1]);
 		$('#description').val(tds[1].innerHTML);
 		$('#charset').val(tds[2].innerHTML);
-		$('#url').val(tds[3].innerHTML.match(/>(.+)</)[1]);
+		$('#url').val(tds[3].innerHTML.match(/href="(.+)" target/)[1]);
 		$('#method').selectlist('selectByValue', tds[4].innerHTML);
 		$('#method_detail').val(tds[4].getAttribute('title'));
 		$('#filter').val(tds[5].getAttribute('title'));
+		$('#imgfix').val(tds[6].getAttribute('title'));
 		$('#EditModalLabel').text('Edit RSS feed');
 		$('#SubmitText').text('Save');
 		$('#SubmitIcon').attr('class', 'glyphicon glyphicon-floppy-save');
@@ -595,6 +601,12 @@ if (isset($_POST['locale'])) {
     			    <textarea name="filter" id="filter" class="form-control" wrap="off" rows="4"></textarea>
     			</div>
     		    </div>
+				<div class="form-group">
+					<label for="imgfix" class="col-sm-4 control-label">Host for fix &lt;img src=</label>
+					<div class="col-sm-6">
+						<input name="imgfix" id="imgfix" class="form-control">
+					</div>
+				</div>
     		</div>
     		<div class="modal-footer">
     		    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
@@ -663,7 +675,7 @@ if (isset($_POST['locale'])) {
 	}
     ?>
     <table id="list" class="table table-striped table-hover">
-        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>XML</th><th width="180">Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>IMGfix</th><th>XML</th><th width="180">Action</th></tr></thead>
         <tbody>
 		<?php
 		try {
@@ -679,8 +691,9 @@ if (isset($_POST['locale'])) {
 			echo '</a></td>';
 			echo '<td data-toggle="tooltip" title="' . htmlspecialchars($row['method_detail']) . '">' . $row['method'] . '</td>';
 			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="glyphicon glyphicon-';
-			echo empty($row['filter']) ? 'unchecked' : 'check';
-			echo '"></span></td>';
+			echo empty($row['filter']) ? 'unchecked' : 'check'; echo '"></span></td>';
+			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['imgfix']) . '"><span class="glyphicon glyphicon-';
+			echo empty($row['imgfix']) ? 'unchecked' : 'check'; echo '"></span></td>';
 			if (empty($row['xml'])) {
 				echo '<td align="center"><button class="btn btn-default btn-xs" data-toggle="tooltip" title="Empty"><span class="glyphicon glyphicon-unchecked"></span></button></td>';
 			} else {
