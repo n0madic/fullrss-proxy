@@ -168,7 +168,7 @@ if (!empty($_REQUEST['feed'])) {
 								$search = trim($search);
 								if (preg_match('/^\/.+\/[a-z]*/i', $search)) {
 									// If filter is regex
-									$content = mb_ereg_replace($search, '', $content);
+									$content = preg_replace($search.'u', '', $content);
 								} else {
 									// If filter is replace string
 									$content = str_replace($search, '', $content);
@@ -407,7 +407,7 @@ if (isset($_POST['locale'])) {
 		$('#name').val(tds[0].innerHTML.match(/>(\w+)</)[1]);
 		$('#description').val(tds[1].innerHTML);
 		$('#charset').val(tds[2].innerHTML);
-		$('#url').val(tds[3].innerHTML.match(/>(.+)</)[1]);
+		$('#url').val(tds[3].innerHTML.match(/href="(.+)" target/)[1]);
 		$('#method').selectlist('selectByValue', tds[4].innerHTML);
 		$('#method_detail').val(tds[4].getAttribute('title'));
 		$('#filter').val(tds[5].getAttribute('title'));
