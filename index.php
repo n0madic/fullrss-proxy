@@ -410,7 +410,7 @@ if (isset($_POST['locale'])) {
 	function Edit(id) {
 		$('#id').val(id);
 		var tds = Array.prototype.slice.call(document.getElementById("row_"+id).getElementsByTagName("td"));
-		$('#name').val(tds[0].innerHTML.match(/>(\w+)</)[1]);
+		$('#name').val(tds[0].innerHTML.match(/>(.+)</)[1]);
 		$('#description').val(tds[1].innerHTML);
 		$('#charset').val(tds[2].innerHTML);
 		$('#url').val(tds[3].innerHTML.match(/href="(.+)" target/)[1]);
@@ -688,7 +688,7 @@ if (isset($_POST['locale'])) {
 			echo '<tr id="row_' . $row['id'] . '"><td><a href="?feed=' . $row['name'] . '" target="_blank">' . $row['name'] . '</a></td><td>' . $row['description'] . '</td>';
 			echo '<td>' . $row['charset'] . '</td><td>';
 			echo '<a href="' . $row['url'] . '" target="_blank">';
-			echo (mb_strlen($row['url']) > 40) ? mb_substr($row['url'], 0, 40).'&hellip;' : $row['url'];
+			echo (mb_strlen($row['url']) > 30) ? mb_substr($row['url'], 0, 30).'&hellip;' : $row['url'];
 			echo '</a></td>';
 			echo '<td data-toggle="tooltip" title="' . htmlspecialchars($row['method_detail']) . '">' . $row['method'] . '</td>';
 			echo '<td align="center" data-toggle="tooltip" title="' . htmlspecialchars($row['filter']) . '"><span class="glyphicon glyphicon-';
