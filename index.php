@@ -85,6 +85,7 @@ if (!empty($_REQUEST['feed'])) {
 	} catch (PDOException $e) {
 		die_error($name, 'dbError: ' . $e->getMessage());
 	}
+	$name = $result[0]['name'];
 	if (count($result) == 0) {
 		die_error($name, '[ERROR] RSS feed <strong>' . $name . '</strong> not found!');
 	} else {
@@ -675,7 +676,7 @@ if (isset($_POST['locale'])) {
 	}
     ?>
     <table id="list" class="table table-striped table-hover">
-        <thead><tr><th>Name</th><th>Description</th><th>Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>IMGfix</th><th>XML</th><th width="180">Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Description</th><th width="130">Charset</th><th>URL</th><th width="140">Method</th><th>Filter</th><th>IMGfix</th><th>XML</th><th width="180">Action</th></tr></thead>
         <tbody>
 		<?php
 		try {
