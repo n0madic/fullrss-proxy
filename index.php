@@ -303,7 +303,8 @@ if (isset($_POST['id']) && !empty($_POST['name'])) {
 	try {
 		if (empty($_POST['id'])) {
 			// Add feed
-			$query = $DB->query("SELECT count(*) FROM feeds WHERE name=" . $DB->quote($_POST['name']));
+			$query = $DB->prepare("SELECT count(*) FROM feeds WHERE name=?");
+			$query->execute([$_POST['name']]);
 			if ($query->fetchColumn())
 				die_error('', '[ERROR] Feed with name <strong>' . $_POST['name'] . '</strong> already present!');
 			$query_update = $DB->prepare("INSERT INTO feeds (name, description, charset, url, method, method_detail, filter, imgfix) VALUES (:name, :description, :charset, :url, :method, :method_detail, :filter, :imgfix)");
