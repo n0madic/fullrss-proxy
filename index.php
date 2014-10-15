@@ -93,7 +93,7 @@ if (!empty($_REQUEST['feed'])) {
 		$xml = $result['xml'];
 		$rss = simplexml_load_file($result['url']);
 		if ($rss !== false) {
-			$pubDate = strtotime($rss->channel->pubDate);
+			$pubDate = strtotime($rss->channel->item->pubDate);
 			if ($pubDate !== false) {
 				// if pubDate is more then last update
 				$need_update = ($pubDate > $result['lastupdate']) ? true : false;
