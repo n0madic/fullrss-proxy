@@ -153,6 +153,15 @@ if (!empty($_REQUEST['feed'])) {
 								}
 							}
 							break;
+						case "Ganon":
+							if (!empty($result['method_detail'])) {
+								require_once 'libs/ganon.php';
+								$html_dom = str_get_dom($html);
+								foreach($html_dom($result['method_detail']) as $el) {
+										$content .= $el->getInnerText();
+								}
+							}
+							break;
 						case "RegEx":
 							if (!empty($result['method_detail'])) {
 								mb_ereg_search_init($html, $result['method_detail']);
@@ -188,9 +197,9 @@ if (!empty($_REQUEST['feed'])) {
 					}
 					if (isset($_REQUEST['preview'])) {
 						echo '<div class="row" style="padding: 20px;">';
-						echo $content;
+						echo trim($content);
 						echo '<br /><h4>HTML code:</h4>';
-						echo '<textarea class="form-control" style="overflow:auto;resize:none;cursor:auto;" rows="20" readonly>' . $content . '</textarea>';
+						echo '<textarea class="form-control" style="overflow:auto;resize:none;cursor:auto;" rows="20" readonly>' . trim($content) . '</textarea>';
 						echo '</div>';
 						die();
 					}
@@ -587,6 +596,7 @@ if (isset($_POST['locale'])) {
     				<ul class="dropdown-menu" role="menu">
     				    <li data-value="Readability"><a href="#">Readability</a></li>
     				    <li data-value="Simple HTML DOM"><a href="#">Simple HTML DOM</a></li>
+					    <li data-value="Ganon"><a href="#">Ganon</a></li>
 						<li data-value="RegEx"><a href="#">Search by RegEx</a></li>
     				</ul>
     				<input class="hidden hidden-field" name="method" readonly="readonly" aria-hidden="true" type="text"/>
