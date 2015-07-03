@@ -612,11 +612,11 @@ if (isset($_POST['locale'])) {
     				    <span class="sr-only">Toggle Dropdown</span>
     				</button>
     				<ul class="dropdown-menu" role="menu">
-    				    <li data-value="Readability"><a href="#">Readability</a></li>
-    				    <li data-value="Simple HTML DOM"><a href="#">Simple HTML DOM</a></li>
-                                    <li data-value="Ganon"><a href="#">Ganon</a></li>
-                                    <li data-value="DomXPath"><a href="#">DomXPath</a></li>
-                                    <li data-value="RegEx"><a href="#">Search by RegEx</a></li>
+<?php if (file_exists('libs/Readability.php')) { ?>     <li data-value="Readability"><a href="#">Readability</a></li> <?php } ?>
+<?php if (file_exists('libs/simple_html_dom.php')) { ?> <li data-value="Simple HTML DOM"><a href="#">Simple HTML DOM</a></li> <?php } ?>
+<?php if (file_exists('libs/ganon.php')) { ?>           <li data-value="Ganon"><a href="#">Ganon</a></li> <?php } ?>
+                                                        <li data-value="DomXPath"><a href="#">DomXPath</a></li>
+                                                        <li data-value="RegEx"><a href="#">Search by RegEx</a></li>
     				</ul>
     				<input class="hidden hidden-field" name="method" readonly="readonly" aria-hidden="true" type="text"/>
     			    </div>
