@@ -254,10 +254,10 @@ if (!empty($_REQUEST['feed'])) {
 if (isset($_POST['log'])) {
 	try {
 		if ($_POST['log'] > 0) {
-			$query = $DB->prepare("SELECT * FROM log WHERE id = :id");
+			$query = $DB->prepare("SELECT * FROM log WHERE id = :id ORDER BY time DESC");
 			$query->bindParam(':id', $_POST['log'], PDO::PARAM_INT);
 		} else {
-			$query = $DB->prepare("SELECT * FROM log");
+			$query = $DB->prepare("SELECT * FROM log ORDER BY time DESC");
 		}
 		$query->execute();
 		$result = $query->fetchAll(PDO::FETCH_ASSOC);
