@@ -162,6 +162,24 @@ if (!empty($_REQUEST['feed'])) {
 								}
 							}
 							break;
+						case "DomXPath":
+							if (!empty($result['method_detail'])) {
+                                                               	$dom = new DomDocument();
+                                                                $dom->preserveWhiteSpace = false;
+                                                                $dom->loadHTML($html);
+                                                                $xpath = new DomXPath($dom);
+                                                                $_res = $xpath->query($result['method_detail']);
+                                                                foreach ($_res as $obj) {
+                                                                    foreach ($obj->childNodes as $child) {
+                                                                        $content .= $obj->ownerDocument->saveHTML($child);
+                                                                    }
+                                                                }
+                                                                unset($dom);
+                                                                unset($xpath);
+							} else {
+									$query_log->execute(array($id, time(), 'ERROR: Empty query string for <strong>' . $name . '</strong>'));							
+							}
+							break;
 						case "RegEx":
 							if (!empty($result['method_detail'])) {
 								mb_ereg_search_init($html, $result['method_detail']);
@@ -379,12 +397,12 @@ if (isset($_POST['locale'])) {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="keywords" content="RSS, Atom, feed, full, full text, full content, full article">
         <link href="favicon.ico" rel="icon" type="image/x-icon" />
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="//www.fuelcdn.com/fuelux/3.0.2/css/fuelux.min.css">
-        <script src="//www.fuelcdn.com/fuelux/3.0.2/js/fuelux.min.js"></script>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="//www.fuelcdn.com/fuelux/3.6.3/css/fuelux.min.css">
+        <script src="//www.fuelcdn.com/fuelux/3.6.3/js/fuelux.min.js"></script>
     </head>
     <body>
         <div class="container">
@@ -596,8 +614,9 @@ if (isset($_POST['locale'])) {
     				<ul class="dropdown-menu" role="menu">
     				    <li data-value="Readability"><a href="#">Readability</a></li>
     				    <li data-value="Simple HTML DOM"><a href="#">Simple HTML DOM</a></li>
-					    <li data-value="Ganon"><a href="#">Ganon</a></li>
-						<li data-value="RegEx"><a href="#">Search by RegEx</a></li>
+                                    <li data-value="Ganon"><a href="#">Ganon</a></li>
+                                    <li data-value="DomXPath"><a href="#">DomXPath</a></li>
+                                    <li data-value="RegEx"><a href="#">Search by RegEx</a></li>
     				</ul>
     				<input class="hidden hidden-field" name="method" readonly="readonly" aria-hidden="true" type="text"/>
     			    </div>
