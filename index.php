@@ -7,6 +7,10 @@ libxml_use_internal_errors(true);
 ini_set('allow_url_fopen', 'On');
 mb_internal_encoding("UTF-8");
 
+// Get hostname
+$hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+$hostname = $hostname ?: $_SERVER['REMOTE_ADDR'];
+
 // Logout
 if (isset($_REQUEST['logout'])) {
 	unset($_SESSION['u_login']);
@@ -59,11 +63,11 @@ setlocale(LC_ALL, $settings['locale']);
 if (isset($_POST['passwd'])) {
 	if (sha1($_POST['passwd']) == $settings['admin_pass']) {
 		$_SESSION['u_login'] = 'YES';
-		$query_log->execute(array('access', time(), "Admin access granted from " . $_SERVER['REMOTE_ADDR']));
+		$query_log->execute(array('access', time(), "Admin access granted from " . $hostname));
 	} else {
 		unset($_SESSION['u_login']);
 		session_destroy();
-		$query_log->execute(array('denied', time(), "Wrong admin password from " . $_SERVER['REMOTE_ADDR']));
+		$query_log->execute(array('denied', time(), "Wrong admin password from " . $hostname));
 	}
 }
 
@@ -244,7 +248,7 @@ if (!empty($_REQUEST['feed'])) {
 		} else {
 			$query_log->execute(array($result['id'], time(), "ERROR loading RSS feed from " . $result['url']));
 		}
-		$query_log->execute(array($result['id'], time(), "Return feed <strong>" . $name . "</strong> for " . $_SERVER['REMOTE_ADDR']));
+		$query_log->execute(array($result['id'], time(), "Return feed <strong>" . $name . "</strong> for " . $hostname));
 		header('Content-Type: text/xml; charset=utf-8');
 		die($xml);
 	}
