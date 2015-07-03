@@ -395,6 +395,9 @@ if (isset($_POST['locale'])) {
 	}
 }
 
+// Clean log
+$DB->exec("DELETE FROM log WHERE time < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY))");
+
 ?>
 <!DOCTYPE html>
 <html>
