@@ -223,6 +223,12 @@ if (!empty($_REQUEST['feed'])) {
 					}
 				}
 				$xml = html_entity_decode($rss->asXML(), ENT_XML1);
+                                // Check XML encoding
+                                preg_match("/encoding=\"(.*?)\"/", $xml, $xml_encoding);
+                                if ($result['charset'] !== 'UTF-8' && strtolower($xml_encoding[1]) !== 'utf-8') {
+                                    $xml = mb_convert_encoding($xml, 'UTF-8', $result['charset']);
+                                    $xml = preg_replace('/encoding="(.*?)"/', 'encoding="utf-8"', $xml);
+                                }
 				$time = ($pubDate !== false) ? $pubDate : time();
 				try {
 					$query_update = $DB->prepare("UPDATE feeds SET xml = :xml, lastupdate = :lastupdate WHERE id = :id");
@@ -796,7 +802,7 @@ function die_error($id, $return)
 }
 
 		?>
-	<footer class="navbar-fixed-bottom">
+	<footer>
 		<div style="text-align: center;"><p><a href="https://github.com/n0madic/fullrss-proxy">GitHub</a> &copy; Nomadic 2014</p></div>
 	</footer>
 </div> <!-- container -->
