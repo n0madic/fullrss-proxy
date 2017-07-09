@@ -9,7 +9,7 @@ mb_internal_encoding("UTF-8");
 
 // Get hostname
 $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-$hostname = $hostname ?: $_SERVER['REMOTE_ADDR'];
+$hostname = $hostname ? $hostname." (".$_SERVER['REMOTE_ADDR'].")" : $_SERVER['REMOTE_ADDR'];
 
 // Logout
 if (isset($_REQUEST['logout'])) {
@@ -120,6 +120,7 @@ if (!empty($_REQUEST['feed'])) {
 						curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 						curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 						curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+						curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; ru-RU; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
 						$html = curl_exec($curl);
 						curl_close($curl);
 					} else {
@@ -128,6 +129,7 @@ if (!empty($_REQUEST['feed'])) {
 					// Convert HTML encoding to UTF-8
 					if ($result['charset'] !== 'UTF-8')
 						$html = mb_convert_encoding($html, 'UTF-8', $result['charset']);
+					$start = microtime(true);
 					// Choice of a method of extraction of a full content
 					switch ($result['method']) {
 						case "Readability":
@@ -218,6 +220,7 @@ if (!empty($_REQUEST['feed'])) {
 						$item->description = '<![CDATA[' . trim($content) . ']]>';
 					}
 					if (isset($_REQUEST['preview'])) {
+						echo '<i>Duration: '.round(microtime(true) - $start, 3).' sec</i><br>';
 						echo '<div class="row" style="padding: 20px;">';
 						echo trim($content);
 						echo '<br /><h4>HTML code:</h4>';
